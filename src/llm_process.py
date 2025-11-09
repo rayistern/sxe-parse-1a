@@ -33,6 +33,10 @@ class LLMProcessor:
         self.timeout = config.get('llm.timeout', 120)
         self.enable_pii_removal = config.get('llm.enable_pii_removal', True)
 
+        # Get prompt templates from config
+        self.user_prompt_template = config.get('llm.user_prompt_template',
+            'Process the following document and convert it to clean, well-structured markdown.\n\nFilename: {filename}\n\nContent:\n{content}')
+
         # Initialize OpenAI client
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
@@ -40,44 +44,25 @@ class LLMProcessor:
 
         self.client = OpenAI(api_key=api_key)
 
-        # Build system prompt with caching
+        # Build system prompt from config
         self.system_prompt = self._build_system_prompt()
 
     def _build_system_prompt(self) -> str:
-        """Build the system prompt for LLM processing."""
-        prompt_parts = [
-            "You are a document processing assistant. Your task is to convert documents to well-structured markdown.",
-            "",
-            "Guidelines:",
-            "- Preserve all meaningful content and structure",
-            "- Use proper markdown formatting (headers, lists, tables, bold, italic, code blocks)",
-            "- Use ATX-style headers (# ## ###)",
-            "- Maintain document hierarchy and organization",
-            "- For tables, use proper markdown table syntax",
-            "- For code snippets, use fenced code blocks with language identifiers",
-            "- Remove any OCR artifacts or formatting errors",
-            "- Improve readability while preserving original meaning",
-        ]
+        """Build the system prompt for LLM processing from config."""
+        # Get base system prompt from config
+        system_prompt = self.config.get('llm.system_prompt', '')
 
+        # If empty, use default
+        if not system_prompt.strip():
+            system_prompt = "You are a document processing assistant. Your task is to convert documents to well-structured markdown."
+
+        # Append PII removal instructions if enabled
         if self.enable_pii_removal:
-            prompt_parts.extend([
-                "",
-                "PII Removal:",
-                "- Identify and REDACT all personally identifiable information (PII)",
-                "- Replace PII with [REDACTED-TYPE] placeholders:",
-                "  - Names: [REDACTED-NAME]",
-                "  - Email addresses: [REDACTED-EMAIL]",
-                "  - Phone numbers: [REDACTED-PHONE]",
-                "  - Street addresses: [REDACTED-ADDRESS]",
-                "  - Social Security Numbers: [REDACTED-SSN]",
-                "  - Credit card numbers: [REDACTED-CCN]",
-                "  - Dates of birth: [REDACTED-DOB]",
-                "  - Other sensitive data: [REDACTED-PII]",
-                "- Preserve generic company names, organizations, and public entities",
-                "- Keep job titles, departments, and roles if not tied to specific individuals",
-            ])
+            pii_prompt = self.config.get('llm.pii_removal_prompt', '')
+            if pii_prompt.strip():
+                system_prompt += pii_prompt
 
-        return '\n'.join(prompt_parts)
+        return system_prompt
 
     def process_document(
         self,
@@ -117,7 +102,11 @@ class LLMProcessor:
     ) -> Optional[str]:
         """Process a single chunk with LLM."""
         try:
-            user_prompt = f"Process the following document and convert it to clean, well-structured markdown.\n\nFilename: {filename}\n\nContent:\n{content}"
+            # Format user prompt using template from config
+            user_prompt = self.user_prompt_template.format(
+                filename=filename,
+                content=content
+            )
 
             # Call OpenAI API
             response = self.client.chat.completions.create(

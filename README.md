@@ -146,6 +146,14 @@ llm:
   model: "gpt-4o-mini"
   max_chunk_size: 100000
   enable_pii_removal: true
+
+  # Customize prompts (all configurable in config.yaml)
+  system_prompt: |
+    You are a document processing assistant...
+  pii_removal_prompt: |
+    PII Removal instructions...
+  user_prompt_template: |
+    Process the following document...
 ```
 
 ### Output Settings
@@ -284,7 +292,10 @@ python src/main.py --stats
 ### Supported Formats
 
 **Documents:**
-- PDF (with OCR support)
+- PDF (with OCR support - automatically detects if OCR is needed)
+  - For digital PDFs: Extracts text directly (fast, no OCR needed)
+  - For scanned PDFs: Automatically runs OCR on pages without extractable text
+  - Configurable OCR language and DPI settings in `config.yaml`
 - Microsoft Word (.docx, .doc)
 - Google Docs
 - OpenDocument (.odt)
@@ -427,7 +438,47 @@ llm:
   max_chunk_size: 100000    # Adjust for your needs
   temperature: 0.1          # Lower = more deterministic
   enable_pii_removal: true  # Toggle PII removal
+
+  # Customize all prompts - edit in config.yaml
+  system_prompt: |
+    You are a document processing assistant. Your task is to convert documents to well-structured markdown.
+
+    Guidelines:
+    - Preserve all meaningful content and structure
+    - Use proper markdown formatting (headers, lists, tables, bold, italic, code blocks)
+    - Use ATX-style headers (# ## ###)
+    - Maintain document hierarchy and organization
+    - For tables, use proper markdown table syntax
+    - For code snippets, use fenced code blocks with language identifiers
+    - Remove any OCR artifacts or formatting errors
+    - Improve readability while preserving original meaning
+
+  pii_removal_prompt: |
+
+    PII Removal:
+    - Identify and REDACT all personally identifiable information (PII)
+    - Replace PII with [REDACTED-TYPE] placeholders:
+      - Names: [REDACTED-NAME]
+      - Email addresses: [REDACTED-EMAIL]
+      - Phone numbers: [REDACTED-PHONE]
+      - Street addresses: [REDACTED-ADDRESS]
+      - Social Security Numbers: [REDACTED-SSN]
+      - Credit card numbers: [REDACTED-CCN]
+      - Dates of birth: [REDACTED-DOB]
+      - Other sensitive data: [REDACTED-PII]
+    - Preserve generic company names, organizations, and public entities
+    - Keep job titles, departments, and roles if not tied to specific individuals
+
+  user_prompt_template: |
+    Process the following document and convert it to clean, well-structured markdown.
+
+    Filename: {filename}
+
+    Content:
+    {content}
 ```
+
+**Note:** All three prompts are fully configurable in `config.yaml`. Edit them to customize LLM behavior for your specific use case.
 
 ## Troubleshooting
 

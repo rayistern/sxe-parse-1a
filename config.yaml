@@ -94,6 +94,46 @@ llm:
   # Timeout per request (seconds)
   timeout: 120
 
+  # System prompt for LLM processing
+  system_prompt: |
+    You are a document processing assistant. Your task is to convert documents to well-structured markdown.
+
+    Guidelines:
+    - Preserve all meaningful content and structure
+    - Use proper markdown formatting (headers, lists, tables, bold, italic, code blocks)
+    - Use ATX-style headers (# ## ###)
+    - Maintain document hierarchy and organization
+    - For tables, use proper markdown table syntax
+    - For code snippets, use fenced code blocks with language identifiers
+    - Remove any OCR artifacts or formatting errors
+    - Improve readability while preserving original meaning
+
+  # PII removal instructions (appended to system prompt if enable_pii_removal is true)
+  pii_removal_prompt: |
+
+    PII Removal:
+    - Identify and REDACT all personally identifiable information (PII)
+    - Replace PII with [REDACTED-TYPE] placeholders:
+      - Names: [REDACTED-NAME]
+      - Email addresses: [REDACTED-EMAIL]
+      - Phone numbers: [REDACTED-PHONE]
+      - Street addresses: [REDACTED-ADDRESS]
+      - Social Security Numbers: [REDACTED-SSN]
+      - Credit card numbers: [REDACTED-CCN]
+      - Dates of birth: [REDACTED-DOB]
+      - Other sensitive data: [REDACTED-PII]
+    - Preserve generic company names, organizations, and public entities
+    - Keep job titles, departments, and roles if not tied to specific individuals
+
+  # User prompt template (use {filename} and {content} as placeholders)
+  user_prompt_template: |
+    Process the following document and convert it to clean, well-structured markdown.
+
+    Filename: {filename}
+
+    Content:
+    {content}
+
 # Processing Options
 processing:
   # Reprocess files that were already completed
