@@ -1,0 +1,160 @@
+# Google Drive Configuration
+google_drive:
+  # Root folder ID to process (leave empty to process entire drive)
+  folder_id: ""
+
+  # Path to Google credentials file
+  credentials_path: "credentials.json"
+
+  # Token storage path (auto-generated)
+  token_path: "token.json"
+
+  # Include shared drives
+  include_shared_drives: false
+
+# File Type Handling
+file_types:
+  # File extensions to completely skip
+  skip_extensions:
+    - jpg
+    - jpeg
+    - png
+    - gif
+    - bmp
+    - svg
+    - ico
+    - mp3
+    - wav
+    - ogg
+    - m4a
+    - mp4
+    - avi
+    - mov
+    - mkv
+    - wmv
+    - flv
+
+  # File types that need OCR
+  ocr_types:
+    - pdf
+    - tiff
+    - tif
+
+  # File types for direct conversion (no LLM needed)
+  direct_conversion:
+    - docx
+    - doc
+    - odt
+    - html
+    - htm
+    - txt
+    - md
+    - csv
+    - tsv
+
+  # Google Drive native formats (require export)
+  google_formats:
+    - google_doc
+    - google_sheet
+    - google_slide
+
+# OCR Configuration
+ocr:
+  enabled: true
+  language: "eng"  # Tesseract language code (eng, fra, deu, etc.)
+  dpi: 300
+  # Additional languages (comma-separated): "eng+fra+deu"
+
+# LLM Configuration
+llm:
+  # Enable/disable LLM processing (can be overridden by --no-llm)
+  enabled: true
+
+  # Provider (currently only openai supported)
+  provider: "openai"
+
+  # Model to use
+  model: "gpt-4o-mini"
+
+  # Max chunk size (in characters) before splitting
+  max_chunk_size: 100000
+
+  # Overlap between chunks (in characters)
+  chunk_overlap: 1000
+
+  # Temperature for generation
+  temperature: 0.1
+
+  # Enable PII removal
+  enable_pii_removal: true
+
+  # Max retries on API failure
+  max_retries: 3
+
+  # Timeout per request (seconds)
+  timeout: 120
+
+# Processing Options
+processing:
+  # Reprocess files that were already completed
+  reprocess_existing: false
+
+  # Resume from last run (skip completed files)
+  resume_from_last: true
+
+  # Sort order for processing: path, name, date, size, type
+  sort_order: "path"
+
+  # Number of parallel workers (for download/conversion)
+  max_workers: 4
+
+  # Batch size for LLM processing
+  llm_batch_size: 10
+
+# Output Configuration
+output:
+  # Path to master markdown file
+  master_file: "data/output/knowledge_base.md"
+
+  # Include table of contents
+  include_toc: true
+
+  # Include metadata headers (YAML frontmatter)
+  include_metadata: true
+
+  # Folder path separator in headers
+  folder_separator: " > "
+
+  # Section separator between documents
+  section_separator: "\n\n---\n\n"
+
+  # Save individual processed files (in addition to master)
+  save_individual_files: true
+
+# Inventory Database
+inventory:
+  # Path to inventory CSV
+  path: "data/inventory.csv"
+
+  # Enable versioning (track multiple processing runs)
+  enable_versioning: true
+
+  # Keep history of failed attempts
+  keep_failed_history: true
+
+# Logging
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+
+  # Log file path
+  file: "logs/gdrive_processor.log"
+
+  # Max log file size (MB)
+  max_size_mb: 10
+
+  # Number of backup log files
+  backup_count: 5
+
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

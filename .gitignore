@@ -1,0 +1,55 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data directories (keep structure, ignore contents)
+data/raw/*
+data/converted/*
+data/processed/*
+data/output/*
+!data/raw/.gitkeep
+!data/converted/.gitkeep
+!data/processed/.gitkeep
+!data/output/.gitkeep
+
+# Logs
+logs/*.log
+
+# Google credentials
+credentials.json
+token.json
+
+# Temporary files
+*.tmp
+.DS_Store
