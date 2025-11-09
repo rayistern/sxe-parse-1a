@@ -1,7 +1,7 @@
 # Google Drive Configuration
 google_drive:
   # Root folder ID to process (leave empty to process entire drive)
-  folder_id: ""
+  folder_id: "1ZAv6pvncV-Xn2i9kWRZYEmDVnijmJd4O"
 
   # Path to Google credentials file
   credentials_path: "credentials.json"

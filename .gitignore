@@ -34,14 +34,14 @@ wheels/
 *~
 
 # Data directories (keep structure, ignore contents)
-data/raw/*
-data/converted/*
-data/processed/*
-data/output/*
-!data/raw/.gitkeep
-!data/converted/.gitkeep
-!data/processed/.gitkeep
-!data/output/.gitkeep
+#data/raw/*
+#data/converted/*
+#data/processed/*
+#data/output/*
+#!data/raw/.gitkeep
+#!data/converted/.gitkeep
+#!data/processed/.gitkeep
+#!data/output/.gitkeep
 
 # Logs
 logs/*.log
