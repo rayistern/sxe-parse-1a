@@ -75,11 +75,70 @@ pip install -r requirements.txt
 
 ### Google Drive API Setup
 
+Follow these steps to set up Google Drive API access:
+
+#### 1. Create a Google Cloud Project
+
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the Google Drive API
-4. Create OAuth 2.0 credentials (Desktop app)
-5. Download credentials and save as `credentials.json` in the project root
+2. Sign in with your Google account
+3. Click the project dropdown at the top (next to "Google Cloud")
+4. Click "NEW PROJECT"
+5. Enter a project name (e.g., "Google Drive Parser")
+6. Click "CREATE"
+7. Wait for the project to be created, then select it from the project dropdown
+
+#### 2. Enable the Google Drive API
+
+1. In your project, go to the **Navigation Menu** (≡) → **APIs & Services** → **Library**
+2. Search for "Google Drive API"
+3. Click on "Google Drive API" from the results
+4. Click the blue **"ENABLE"** button
+5. Wait for the API to be enabled
+
+#### 3. Configure OAuth Consent Screen
+
+Before creating credentials, you need to configure the OAuth consent screen:
+
+1. Go to **APIs & Services** → **OAuth consent screen**
+2. Select **"External"** user type (unless you have a Google Workspace account)
+3. Click **"CREATE"**
+4. Fill in the required fields:
+   - **App name**: "Google Drive Parser" (or your preferred name)
+   - **User support email**: Your email address
+   - **Developer contact information**: Your email address
+5. Click **"SAVE AND CONTINUE"**
+6. On the "Scopes" page, click **"SAVE AND CONTINUE"** (no need to add scopes manually)
+7. On the "Test users" page:
+   - Click **"+ ADD USERS"**
+   - Enter your Google email address (the one that has access to the Drive files)
+   - Click **"ADD"**
+   - Click **"SAVE AND CONTINUE"**
+8. Review the summary and click **"BACK TO DASHBOARD"**
+
+#### 4. Create OAuth 2.0 Credentials
+
+1. Go to **APIs & Services** → **Credentials**
+2. Click **"+ CREATE CREDENTIALS"** at the top
+3. Select **"OAuth client ID"**
+4. For "Application type", select **"Desktop app"**
+5. Enter a name (e.g., "Desktop Client")
+6. Click **"CREATE"**
+7. A dialog will appear with your credentials - click **"OK"**
+
+#### 5. Download Credentials File
+
+1. In the **Credentials** page, find your newly created OAuth 2.0 Client ID
+2. Click the **download icon** (⬇) on the right side of the credential
+3. Save the downloaded JSON file as `credentials.json` in your project root directory:
+   ```
+   /home/user/sxe-parse-1a/credentials.json
+   ```
+
+**Important Notes:**
+- Keep `credentials.json` secure and **never commit it to version control** (it's already in `.gitignore`)
+- The first time you run the tool, it will open a browser for authentication
+- After authentication, a `token.json` file will be created to store your access token
+- You only need to authenticate once (unless you delete `token.json`)
 
 ### Environment Setup
 
@@ -484,12 +543,34 @@ llm:
 
 ### Common Issues
 
-**Authentication Issues:**
+**Google Drive Authentication Issues:**
+
+*Problem: "Access blocked: This app's request is invalid"*
+- Make sure you configured the OAuth consent screen (step 3 above)
+- Add yourself as a test user in the OAuth consent screen
+
+*Problem: "Error: invalid_grant" or "Token has been expired or revoked"*
 ```bash
 # Delete token and re-authenticate
 rm token.json
 python src/main.py --discovery-only
 ```
+
+*Problem: Browser doesn't open during authentication*
+- The tool will print a URL in the terminal
+- Copy and paste it into your browser manually
+- Complete the authentication flow
+- The tool will detect the authorization automatically
+
+*Problem: "Credentials file not found"*
+- Make sure `credentials.json` is in the project root directory
+- Check the filename is exactly `credentials.json` (not `client_secret_xxx.json`)
+- You can rename the downloaded file to `credentials.json`
+
+*Problem: "Access denied" or "Insufficient permissions"*
+- Make sure the Google account you authenticate with has access to the shared folder
+- If using a shared folder, verify it's shared with your account
+- Check that the Google Drive API is enabled in your Google Cloud project
 
 **OCR Not Working:**
 - Ensure Tesseract is installed: `tesseract --version`
